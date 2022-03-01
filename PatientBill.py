@@ -3,8 +3,8 @@ import ProcedureClass as pro
 
 def main():
     patient = create_patient()
-    procs = enter_procedures()
-    display_bill(patient, procs)
+    procedures = enter_procedures()
+    display_bill(patient, procedures)
 
 def create_patient():
     #Initialize patient attributes
@@ -20,31 +20,18 @@ def create_patient():
 
 
 def enter_procedures():
-    #initialize
-    cont = 'y'
-    procedures = []
+    #Initialize Procedures
+    procedure1 = pro.Procedure('Physical Exam', '2/15/2022', 'Dr. Irvine', 250, 1)
+    procedure2 = pro.Procedure('MRI', '2/15/2022', 'Dr. Hamilton', 1500, 1)
+    procedure3 = pro.Procedure('CT Scan', '2/17/2022', 'Dr. Drey', 1200, 2)
+    procedures = [procedure1, procedure2, procedure3]
 
-    #loop for entering new procedures
-    while cont.lower() == 'y':
-        print('***New Procedure***')
-        proc_name = input('Enter procedure name: ')
-        proc_date = input('Enter procedure date: ')
-        practitioner = input('Enter practitioner: ')
-        charge = int(input('Enter charge: '))
-        patient_id = int(input('Enter patient ID: '))
-        
-        procedure = pro.Procedure(proc_name, proc_date, practitioner, charge, patient_id)
-        procedures.append(procedure)
-
-        cont = input('\nDo you want to add a new procedure? y/n ')
-        print()
     return procedures
 
 
 def display_bill(patient, procedures):
     #variable
-    vet_discount = 0.4
-
+    VET_DISCOUNT = 0.4
     #Display Patient Info
     print('\n*** Patient Bill ***')
     print('Name:', pc.Patient.get_name(patient).title())
@@ -55,11 +42,11 @@ def display_bill(patient, procedures):
     i = 0
     total = 0.0
     for row in procedures:
-        if pro.Procedure.get_patient_id(procedures[i]) == pc.Patient.get_ID(patient):
-            procedure = pro.Procedure.get_name(procedures[i])
-            date = pro.Procedure.get_date(procedures[i])
-            prac = pro.Procedure.get_practitioner(procedures[i])
-            charge = pro.Procedure.get_charges(procedures[i])
+        if procedures[i].get_patient_id() == patient.get_ID():
+            procedure = procedures[i].get_name()
+            date = procedures[i].get_date()
+            prac = procedures[i].get_practitioner()
+            charge = procedures[i].get_charges()
             print()
             print('Procedure:', procedure)
             print('Date:', date)
@@ -68,9 +55,10 @@ def display_bill(patient, procedures):
             print()
             total += charge
             i += 1
+
     #Check for veteran discount
-    if pc.Patient.get_veteran_status(patient) == True:
-        total *= (1 - vet_discount)
+    if patient.get_veteran_status() == True:
+        total *= (1 - VET_DISCOUNT)
 
     #Display Total Charges    
     print('Total Charges: $', format(total, '<5,.2f'), sep = '')
